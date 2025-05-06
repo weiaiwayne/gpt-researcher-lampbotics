@@ -13,6 +13,13 @@ from ..prompts import PromptFamily
 from .costs import estimate_llm_cost
 from .validators import Subtopics
 import os
+import logging
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage
+
+
+OPENROUTER_MODELS = ["deepseek/deepseek-chat-v3-0324", "meta-llama/llama-3.3-70b-instruct"]
 
 
 def get_llm(llm_provider, **kwargs):
@@ -54,7 +61,7 @@ async def create_chat_completion(
         raise ValueError(
             f"Max tokens cannot be more than 16,000, but got {max_tokens}")
 
-    # Get the provider from supported providers
+    # Get the LLM provider from supported providers
     kwargs = {
         'model': model,
         **(llm_kwargs or {})
@@ -70,11 +77,23 @@ async def create_chat_completion(
         kwargs['temperature'] = None
         kwargs['max_tokens'] = None
 
-    if llm_provider == "openai":
-        base_url = os.environ.get("OPENAI_BASE_URL", None)
+    # Handle specific provider configurations
+    if llm_provider in ["openai", "azure_openai"]:
+        base_url = os.environ.get(f"{llm_provider.upper()}_BASE_URL", None)
         if base_url:
-            kwargs['openai_api_base'] = base_url
+            kwargs[f'{llm_provider}_api_base'] = base_url
+            
+    # Check if the model is one of the openrouter models
+    if model in OPENROUTER_MODELS:
+      # Set up the client for openrouter
+        kwargs['openai_api_base'] = "https://openrouter.ai/api/v1"
+        kwargs['openai_api_key'] = os.environ.get("OPENROUTER_API_KEY")
+        kwargs['extra_headers'] = {
+                "HTTP-Referer": os.environ.get("YOUR_SITE_URL", None),  # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": os.environ.get("YOUR_SITE_NAME", None),  # Optional. Site title for rankings on openrouter.ai.
+            }
 
+    # Get the actual provider
     provider = get_llm(llm_provider, **kwargs)
     response = ""
     # create response

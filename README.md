@@ -18,13 +18,24 @@
 
 </div>
 
-# 🔎 GPT Researcher
+<br>
 
-**GPT Researcher is an open deep research agent designed for both web and local research on any given task.** 
+<h1 align="center">
+  🔎 <CODE_BLOCK>LampMind Assistant</CODE_BLOCK>
+</h1>
 
-The agent produces detailed, factual, and unbiased research reports with citations. GPT Researcher provides a full suite of customization options to create tailor made and domain specific research agents. Inspired by the recent [Plan-and-Solve](https://arxiv.org/abs/2305.04091) and [RAG](https://arxiv.org/abs/2005.11401) papers, GPT Researcher addresses misinformation, speed, determinism, and reliability by offering stable performance and increased speed through parallelized agent work.
+<p align="center">
+  <b>Empowering social science research with AI-driven insights.</b>
+</p>
 
-**Our mission is to empower individuals and organizations with accurate, unbiased, and factual information through AI.**
+<CODE_BLOCK>LampMind Assistant</CODE_BLOCK> is an open research agent designed to empower social scientists by gathering and analyzing data from diverse sources. This agent helps researchers produce detailed, factual, and unbiased research reports with citations. <CODE_BLOCK>LampMind Assistant</CODE_BLOCK> provides a full suite of customization options to create tailor-made and domain-specific research agents. Inspired by the recent [Plan-and-Solve](https://arxiv.org/abs/2305.04091) and [RAG](https://arxiv.org/abs/2005.11401) papers, <CODE_BLOCK>LampMind Assistant</CODE_BLOCK> addresses misinformation, speed, determinism, and reliability by offering stable performance and increased speed through parallelized agent work.
+
+### Key Highlights for Social Science Researchers
+
+-   **Diverse Data Gathering:** Collect information from a wide variety of sources, ensuring a broad range of perspectives.
+-   **Societal Analysis:** Analyze complex societal issues and community dynamics.
+-   **Collaborative Community:** Join a community of social scientists to collaborate and share research insights.
+-   **Bias Reduction:** Reduces bias in social science research by scraping multiple opinions and presenting them in an unbiased manner.
 
 ## Why GPT Researcher?
 
@@ -33,6 +44,9 @@ The agent produces detailed, factual, and unbiased research reports with citatio
 - Current LLMs have token limitations, insufficient for generating long research reports.
 - Limited web sources in existing services lead to misinformation and shallow results.
 - Selective web sources can introduce bias into research tasks.
+
+**Our mission is to empower social science researchers with accurate, unbiased, and factual information through AI, facilitating a deeper understanding of community and societal impacts.**
+
 
 ## Demo
 https://github.com/user-attachments/assets/8fcaaa4c-31e5-4814-89b4-94f1433d139d
@@ -47,12 +61,14 @@ The core idea is to utilize 'planner' and 'execution' agents. The planner genera
 <img align="center" height="600" src="https://github.com/assafelovic/gpt-researcher/assets/13554167/4ac896fd-63ab-4b77-9688-ff62aafcc527">
 </div>
 
+
 Steps:
 * Create a task-specific agent based on a research query.
 * Generate questions that collectively form an objective opinion on the task.
 * Use a crawler agent for gathering information for each question.
 * Summarize and source-track each resource.
 * Filter and aggregate summaries into a final research report.
+
 
 ## Tutorials
  - [How it Works](https://docs.gptr.dev/blog/building-gpt-researcher)
@@ -62,6 +78,7 @@ Steps:
 ## Features
 
 - 📝 Generate detailed research reports using web and local documents.
+
 - 🖼️ Smart image scraping and filtering for reports.
 - 📜 Generate detailed reports exceeding 2,000 words.
 - 🌐 Aggregate over 20 sources for objective conclusions.
@@ -218,7 +235,7 @@ Please check out our [roadmap](https://trello.com/b/3O7KBePw/gpt-researcher-road
 
 ## 🛡 Disclaimer
 
-This project, GPT Researcher, is an experimental application and is provided "as-is" without any warranty, express or implied. We are sharing codes for academic purposes under the Apache 2 license. Nothing herein is academic advice, and NOT a recommendation to use in academic or research papers.
+This project, LampMind Assistant, is an experimental application and is provided "as-is" without any warranty, express or implied. We are sharing codes for academic purposes under the Apache 2 license. Nothing herein is academic advice, and NOT a recommendation to use in academic or research papers.
 
 Our view on unbiased research claims:
 1. The main goal of GPT Researcher is to reduce incorrect and biased facts. How? We assume that the more sites we scrape the less chances of incorrect data. By scraping multiple sites per research, and choosing the most frequent information, the chances that they are all wrong is extremely low.

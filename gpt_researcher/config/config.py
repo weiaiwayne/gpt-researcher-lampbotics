@@ -3,17 +3,13 @@ import os
 import warnings
 from typing import Dict, Any, List, Union, Type, get_origin, get_args
 from .variables.default import DEFAULT_CONFIG
-from .variables.base import BaseConfig
 from ..retrievers.utils import get_all_retriever_names
 
 
-class Config:
-    """Config class for GPT Researcher."""
+class Config():
 
     CONFIG_DIR = os.path.join(os.path.dirname(__file__), "variables")
-
-    def __init__(self, config_path: str | None = None):
-        """Initialize the config class."""
+    def __init__(self, config_path: str | None = None):    
         self.config_path = config_path
         self.llm_kwargs: Dict[str, Any] = {}
         self.embedding_kwargs: Dict[str, Any] = {}
@@ -30,7 +26,7 @@ class Config:
         for key, value in config.items():
             env_value = os.getenv(key)
             if env_value is not None:
-                value = self.convert_env_value(key, env_value, BaseConfig.__annotations__[key])
+                value = self.convert_env_value(key, env_value, str)
             setattr(self, key.lower(), value)
 
         # Handle RETRIEVER with default value
@@ -234,3 +230,7 @@ class Config:
     def set_verbose(self, verbose: bool) -> None:
         """Set the verbosity level."""
         self.llm_kwargs["verbose"] = verbose
+
+    def validate_default_agent(self):
+        from ..agent import valid_agent_types
+        assert self.agent_type in valid_agent_types, f"Invalid agent type: {self.agent_type}. Valid options are: {', '.join(valid_agent_types)}."

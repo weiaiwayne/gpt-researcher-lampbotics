@@ -19,7 +19,7 @@ _SUPPORTED_PROVIDERS = {
     "huggingface",
     "nomic",
     "voyageai",
-    "dashscope",
+    "dashscope",    
     "custom",
     "bedrock",
 }
@@ -65,10 +65,13 @@ class Memory:
                 _embeddings = VertexAIEmbeddings(model=model, **embdding_kwargs)
             case "google_genai":
                 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
-                _embeddings = GoogleGenerativeAIEmbeddings(
-                    model=model, **embdding_kwargs
-                )
+                try:
+                    _embeddings = GoogleGenerativeAIEmbeddings(
+                        model=model, **embdding_kwargs
+                    )
+                except ValueError:
+                    print("Google API Key not found. If you are not going to use google models, ignore this error.")
+                    
             case "fireworks":
                 from langchain_fireworks import FireworksEmbeddings
 

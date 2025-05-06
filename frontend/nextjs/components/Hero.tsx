@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React, { FC, useEffect, useState, useRef } from "react";
 import InputArea from "./ResearchBlocks/elements/InputArea";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +18,7 @@ const Hero: FC<THeroProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [showGradient, setShowGradient] = useState(true);
   const particlesContainerRef = useRef<HTMLDivElement>(null);
+  const [showAIWhopper, setShowAIWhopper] = useState(false);
   
   useEffect(() => {
     setIsVisible(true);
@@ -87,6 +89,10 @@ const Hero: FC<THeroProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => setShowAIWhopper(true), 500); // Show after 500ms
+  }, []);
+
   const handleClickSuggestion = (value: string) => {
     setPromptValue(value);
   };
@@ -109,6 +115,82 @@ const Hero: FC<THeroProps> = ({
         transition={{ duration: 0.8 }}
         className="flex flex-col items-center justify-center w-full py-6 sm:py-8 md:py-16 lg:pt-10 lg:pb-20"
       >
+        <AnimatePresence>
+          {showAIWhopper && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="w-full max-w-[800px] px-4"
+            >
+              <div className="rounded-lg bg-black bg-opacity-30 backdrop-blur-sm border border-teal-500/30 px-6 py-8 sm:px-8 sm:py-10">
+                <div className="flex flex-col items-center gap-6 sm:gap-8">
+                  {/* Title */}
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center tracking-tight">
+                    Build Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400">AI Whopper</span> with LampMind Assistant
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="text-gray-300 text-center text-sm sm:text-base max-w-2xl">
+                    Think of it like building a burger:
+                    <span className="font-medium"> Base Models</span> are the patties,
+                    <span className="font-medium"> your prompts</span> are the bread, and
+                    <span className="font-medium"> your documents</span> are the tomatoes, sauces, and lettuce.
+                  </p>
+
+                  {/* Burger image */}
+                  <div className="w-full max-w-md">
+                    <motion.div 
+                      className="relative"
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <Image
+                        src="/img/burger.png"
+                        alt="AI Whopper"
+                        width={600}
+                        height={400}
+                        className="rounded-xl mx-auto"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-300 text-center text-sm sm:text-base max-w-3xl">
+                    LampMind's goal is to build no-code platforms for story generation and AI-assisted research.
+                  </p>
+
+                  {/* Call to action button */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                  >
+                    <Link href={"#"} className="group flex w-fit items-center justify-center rounded-full border border-solid border-teal-500/30 bg-gradient-to-r from-teal-900/30 to-cyan-900/30 px-6 py-3 text-center hover:border-teal-500/60 hover:from-teal-900/40 hover:to-cyan-900/40 transition-all duration-300 hover:shadow-lg hover:shadow-teal-900/20">
+                        <span
+                        className="text-sm font-medium leading-[normal] text-gray-200 transition-all duration-300 group-hover:text-white"
+                        >
+                          Get Started
+                        </span>
+                    </Link>
+                  </motion.div>
+                </div>
+              </div>
+              
+              {/* Custom keyframes for magical animations */}
+              <style jsx global>{`
+                @keyframes shimmer {
+                }
+                
+                @keyframes breathe {
+                }
+              `}</style>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.95 }}
@@ -139,7 +221,7 @@ const Hero: FC<THeroProps> = ({
             variants={fadeInUp}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            Say Hello to GPT Researcher, your AI partner for instant insights and comprehensive research
+            Say Hello to LampMind Assistant, your AI partner for instant insights and comprehensive research
           </motion.h2>
           
           {/* Powered by badge */}
@@ -156,7 +238,7 @@ const Hero: FC<THeroProps> = ({
               rel="noopener noreferrer" 
               className="text-white text-[15px] font-bold hover:underline"
             >
-              GPT Researcher
+              LampMind Assistant
             </a>
           </motion.div>*/}
         </motion.div>
@@ -287,6 +369,7 @@ const Hero: FC<THeroProps> = ({
     </div>
   );
 };
+
 
 type suggestionType = {
   id: number;

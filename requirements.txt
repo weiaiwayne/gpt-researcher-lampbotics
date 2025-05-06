@@ -29,6 +29,8 @@ json_repair
 json5
 loguru
 langgraph
+langchain-openai
+langchain-google-genai
 
 # uncomment for testing
 # pytest

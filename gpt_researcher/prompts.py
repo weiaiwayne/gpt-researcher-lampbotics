@@ -1,23 +1,15 @@
 import warnings
 from datetime import date, datetime, timezone
-
 from langchain.docstore.document import Document
-
 from .config import Config
 from .utils.enum import ReportSource, ReportType, Tone
 from .utils.enum import PromptFamily as PromptFamilyEnum
 from typing import Callable, List, Dict, Any
 
 
-## Prompt Families #############################################################
-
 class PromptFamily:
-    """General purpose class for prompt formatting.
-
-    This may be overwritten with a derived class that is model specific. The
-    methods are broken down into two groups:
-
-    1. Prompt Generators: These follow a standard format and are correlated with
+    """Prompt formatting.
+    Prompt generators follow a standard format and are correlated with
         the ReportType enum. They should be accessed via
         get_prompt_by_report_type
 
@@ -25,13 +17,11 @@ class PromptFamily:
         standard signature and are accessed directly in the agent code.
 
     All derived classes must retain the same set of method names, but may
-    override individual methods.
-    """
+    override individual methods."""
 
     def __init__(self, config: Config):
-        """Initialize with a config instance. This may be used by derived
-        classes to select the correct prompting based on configured models and/
-        or providers
+        """Initialize with a config instance. This may be used by derived classes to
+        select the correct prompting based on configured models and/or providers
         """
         self.cfg = config
 
@@ -42,15 +32,12 @@ class PromptFamily:
         report_type: str,
         max_iterations: int = 3,
         context: List[Dict[str, Any]] = [],
-    ):
-        """Generates the search queries prompt for the given question.
+    ) -> str:
+        """Generates search queries prompt.
         Args:
-            question (str): The question to generate the search queries prompt for
-            parent_query (str): The main question (only relevant for detailed reports)
-            report_type (str): The report type
-            max_iterations (int): The maximum number of search queries to generate
-            context (str): Context for better understanding of the task with realtime web information
-
+            question: The question to generate the search queries prompt for
+            parent_query: Main question (only relevant for detailed reports)
+            report_type: The report type
         Returns: str: The search queries prompt for the given question
         """
 
@@ -69,7 +56,8 @@ Context: {context}
 Use this context to inform and refine your search queries. The context provides real-time web information that can help you generate more specific and relevant queries. Consider any current events, recent developments, or specific details mentioned in the context that could enhance the search queries.
 """ if context else ""
 
-        dynamic_example = ", ".join([f'"query {i+1}"' for i in range(max_iterations)])
+        dynamic_example = ", ".join(
+            [f'"query {i+1}"' for i in range(max_iterations)])
 
         return f"""Write {max_iterations} google search queries to search online that form an objective opinion from the following task: "{task}"
 
@@ -88,11 +76,10 @@ The response should contain ONLY the list.
         report_format="apa",
         total_words=1000,
         tone=None,
-        language="english",
-    ):
+        language="english") -> str:
         """Generates the report prompt for the given question and research summary.
-        Args: question (str): The question to generate the report prompt for
-                research_summary (str): The research summary to generate the report prompt for
+        Args: question: The question to generate the report prompt for
+                research_summary: The research summary to generate the report prompt for
         Returns: str: The report prompt for the given question and research summary
         """
 
@@ -138,8 +125,7 @@ Assume that the current date is {date.today()}.
 """
 
     @staticmethod
-    def curate_sources(query, sources, max_results=10):
-        return f"""Your goal is to evaluate and curate the provided scraped content for the research task: "{query}"
+    def curate_sources(query, sources, max_results=10) -> str:
     while prioritizing the inclusion of relevant and high-quality information, especially sources containing statistics, numbers, or concrete data.
 
 The final curated list will be used as context for creating a research report, so prioritize:
@@ -172,7 +158,8 @@ The response MUST not contain any markdown format or additional text (like ```js
 """
 
     @staticmethod
-    def generate_resource_report_prompt(
+    def generate_resource_report_prompt( \
+
         question, context, report_source: str, report_format="apa", tone=None, total_words=1000, language="english"
     ):
         """Generates the resource report prompt for the given question and research summary.
@@ -212,7 +199,7 @@ The response MUST not contain any markdown format or additional text (like ```js
         )
 
     @staticmethod
-    def generate_custom_report_prompt(
+    def generate_custom_report_prompt( \
         query_prompt, context, report_source: str, report_format="apa", tone=None, total_words=1000, language: str = "english"
     ):
         return f'"{context}"\n\n{query_prompt}'
@@ -221,9 +208,10 @@ The response MUST not contain any markdown format or additional text (like ```js
     def generate_outline_report_prompt(
         question, context, report_source: str, report_format="apa", tone=None,  total_words=1000, language: str = "english"
     ):
-        """Generates the outline report prompt for the given question and research summary.
-        Args: question (str): The question to generate the outline report prompt for
-                research_summary (str): The research summary to generate the outline report prompt for
+        """Generates outline report prompt.
+
+        Args: question: The question to generate the outline report prompt for
+                research_summary: The research summary to generate the outline report prompt for
         Returns: str: The outline report prompt for the given question and research summary
         """
 
@@ -245,16 +233,14 @@ The response MUST not contain any markdown format or additional text (like ```js
         tone=None,
         total_words=2000,
         language: str = "english"
-    ):
-        """Generates the deep research report prompt, specialized for handling hierarchical research results.
+    ) -> str:
+        """Deep research report prompt.
         Args:
-            question (str): The research question
-            context (str): The research context containing learnings with citations
-            report_source (str): Source of the research (web, etc.)
-            report_format (str): Report formatting style
-            tone: The tone to use in writing
-            total_words (int): Minimum word count
-            language (str): Output language
+            question: The research question
+            context: The research context containing learnings with citations
+            report_source: Source of the research (web, etc.)
+            report_format: Report formatting style
+            tone: Tone to use in writing
         Returns:
             str: The deep research report prompt
         """
@@ -310,7 +296,7 @@ Assume the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y')}.
 
     @staticmethod
     def auto_agent_instructions():
-        return """
+        return """  
 This task involves researching a given topic, regardless of its complexity or the availability of a definitive answer. The research is conducted by a specific server, defined by its type and role, with each server requiring distinct instructions.
 Agent
 The server is determined by the field of the topic and the specific name of the server that could be utilized to research the topic provided. Agents are categorized by their area of expertise, and each server type is associated with a corresponding emoji.
@@ -339,7 +325,7 @@ response:
     @staticmethod
     def generate_summary_prompt(query, data):
         """Generates the summary prompt for the given question and text.
-        Args: question (str): The question to generate the summary prompt for
+        Args: question: The question to generate the summary prompt for
                 text (str): The text to generate the summary prompt for
         Returns: str: The summary prompt for the given question and text
         """
@@ -359,7 +345,7 @@ response:
                           for i, d in enumerate(docs)
                           if top_n is None or i < top_n)
 
-    @staticmethod
+    @ staticmethod
     def join_local_web_documents(docs_context: str, web_context: str) -> str:
         """Joins local web documents with context scraped from the internet"""
         return f"Context from local documents: {docs_context}\n\nContext from web sources: {web_context}"
@@ -367,7 +353,7 @@ response:
     ################################################################################################
 
     # DETAILED REPORT PROMPTS
-
+    @ staticmethod
     @staticmethod
     def generate_subtopics_prompt() -> str:
         return """
@@ -503,7 +489,7 @@ Provide the draft headers in a list format using markdown syntax, for example:
 """
 
     @staticmethod
-    def generate_report_introduction(question: str, research_summary: str = "", language: str = "english", report_format: str = "apa") -> str:
+    def generate_report_introduction(question: str, research_summary: str = "", language: str = "english", report_format: str = "apa") -> str:  
         return f"""{research_summary}\n
 Using the above latest information, Prepare a detailed report introduction on the topic -- {question}.
 - The introduction should be succinct, well-structured, informative with markdown syntax.
@@ -515,8 +501,7 @@ Assume that the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y'
 """
 
 
-    @staticmethod
-    def generate_report_conclusion(query: str, report_content: str, language: str = "english", report_format: str = "apa") -> str:
+    def generate_report_conclusion(query: str, report_content: str, language: str = "english", report_format: str = "apa") -> str:  
         """
         Generate a concise conclusion summarizing the main findings and implications of a research report.
 
@@ -553,12 +538,9 @@ Assume that the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y'
 
 
 class GranitePromptFamily(PromptFamily):
-    """Prompts for IBM's granite models"""
-
-
     def _get_granite_class(self) -> type[PromptFamily]:
         """Get the right granite prompt family based on the version number"""
-        if "3.3" in self.cfg.smart_llm:
+        if "3.3" in self.cfg.smart_llm: 
             return Granite33PromptFamily
         if "3" in self.cfg.smart_llm:
             return Granite3PromptFamily
@@ -573,7 +555,7 @@ class GranitePromptFamily(PromptFamily):
 
 
 class Granite3PromptFamily(PromptFamily):
-    """Prompts for IBM's granite 3.X models (before 3.3)"""
+    """Prompts for IBM's granite 3.X models (before 3.3)"""  
 
     _DOCUMENTS_PREFIX = "<|start_of_role|>documents<|end_of_role|>\n"
     _DOCUMENTS_SUFFIX = "\n<|end_of_text|>"
@@ -632,8 +614,6 @@ class Granite33PromptFamily(PromptFamily):
         """Joins local web documents using Granite's preferred format"""
         return "\n\n".join([docs_context, web_context])
 
-## Factory ######################################################################
-
 # This is the function signature for the various prompt generator functions
 PROMPT_GENERATOR = Callable[
     [
@@ -666,7 +646,7 @@ def get_prompt_by_report_type(
     default_report_type = ReportType.ResearchReport.value
     if not prompt_by_type:
         warnings.warn(
-            f"Invalid report type: {report_type}.\n"
+            f"Invalid report type: {report_type}.\n" 
             f"Please use one of the following: {', '.join([enum_value for enum_value in report_type_mapping.keys()])}\n"
             f"Using default report type: {default_report_type} prompt.",
             UserWarning,
@@ -694,7 +674,7 @@ def get_prompt_family(
     if prompt_family := prompt_family_mapping.get(prompt_family_name):
         return prompt_family(config)
     warnings.warn(
-        f"Invalid prompt family: {prompt_family_name}.\n"
+        f"Invalid prompt family: {prompt_family_name}.\n"  
         f"Please use one of the following: {', '.join([enum_value for enum_value in prompt_family_mapping.keys()])}\n"
         f"Using default prompt family: {PromptFamilyEnum.Default.value} prompt.",
         UserWarning,

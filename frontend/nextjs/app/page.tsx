@@ -299,14 +299,8 @@ export default function Home() {
         ref={mainContentRef}
         className="min-h-[100vh] pt-[120px]"
       >
-        {!showResult && (
-          <Hero
-            promptValue={promptValue}
-            setPromptValue={setPromptValue}
-            handleDisplayResult={handleDisplayResult}
-          />
-        )}
-
+        <Hero />
+        
         {showResult && (
           <div className="flex h-full w-full grow flex-col justify-between">
             <div className="container w-full space-y-2">

@@ -1,13 +1,22 @@
 from .base import BaseConfig
 
+SUPPORTED_PROVIDERS = [
+    "openai",
+    "openrouter",
+    "google_genai",
+    # Add other providers here if needed
+]
+
+LLM_MODELS = ["google_genai", "openai", "openrouter"]
+
 DEFAULT_CONFIG: BaseConfig = {
     "RETRIEVER": "tavily",
     "EMBEDDING": "openai:text-embedding-3-small",
     "SIMILARITY_THRESHOLD": 0.42,
     "FAST_LLM": "openai:gpt-4o-mini",
     "SMART_LLM": "openai:gpt-4.1",  # Has support for long responses (2k+ words).
-    "STRATEGIC_LLM": "openai:o4-mini",  # Can be used with o1 or o3, please note it will make tasks slower.
-    "FAST_TOKEN_LIMIT": 3000,
+    "STRATEGIC_LLM": "openrouter:deepseek/deepseek-chat-v3-0324",  # Can be used with o1 or o3, please note it will make tasks slower.
+    "FAST_TOKEN_LIMIT": 3000, 
     "SMART_TOKEN_LIMIT": 6000,
     "STRATEGIC_TOKEN_LIMIT": 4000,
     "BROWSE_CHUNK_MAX_LENGTH": 8192,

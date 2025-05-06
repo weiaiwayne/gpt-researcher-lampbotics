@@ -11,25 +11,25 @@ import os
 from enum import Enum
 
 _SUPPORTED_PROVIDERS = {
-    "openai",
-    "anthropic",
-    "azure_openai",
-    "cohere",
-    "google_vertexai",
-    "google_genai",
-    "fireworks",
-    "ollama",
-    "together",
-    "mistralai",
-    "huggingface",
-    "groq",
-    "bedrock",
-    "dashscope",
-    "xai",
-    "deepseek",
-    "litellm",
-    "gigachat",
-    "openrouter"
+    "openai",  # OpenAI API
+    "anthropic",  # Anthropic API
+    "azure_openai",  # Azure OpenAI API
+    "cohere",  # Cohere API
+    "google_vertexai",  # Google Vertex AI API
+    "google_genai",  # Google Gemini API
+    "fireworks",  # Fireworks API
+    "ollama",  # Ollama API
+    "together",  # Together AI API
+    "mistralai",  # Mistral AI API
+    "huggingface",  # Hugging Face API
+    "groq",  # Groq API
+    "bedrock",  # AWS Bedrock API
+    "dashscope",  # DashScope API
+    "xai",  # xAI API
+    "deepseek",  # DeepSeek API
+    "litellm",  # LiteLLM API
+    "gigachat",  # GigaChat API
+    "openrouter"  # OpenRouter API
 }
 
 NO_SUPPORT_TEMPERATURE_MODELS = [
@@ -45,13 +45,13 @@ NO_SUPPORT_TEMPERATURE_MODELS = [
 ]
 
 SUPPORT_REASONING_EFFORT_MODELS = [
-    "o3-mini",
-    "o3-mini-2025-01-31"
-    "o4-mini"
+    "o3-mini",  # 01.AI model
+    "o3-mini-2025-01-31",  # 01.AI model
+    "o4-mini"  # 01.AI model
 ]
 
 class ReasoningEfforts(Enum):
-    High = "high"
+    High = "high" 
     Medium = "medium"
     Low = "low"
 
@@ -80,6 +80,7 @@ class GenericLLMProvider:
         self.llm = llm
         self.chat_logger = ChatLogger(chat_log) if chat_log else None
         self.verbose = verbose
+
     @classmethod
     def from_provider(cls, provider: str, chat_log: str | None = None, verbose: bool=True, **kwargs: Any):
         if provider == "openai":
@@ -113,12 +114,18 @@ class GenericLLMProvider:
             llm = ChatVertexAI(**kwargs)
         elif provider == "google_genai":
             _check_pkg("langchain_google_genai")
+
             from langchain_google_genai import ChatGoogleGenerativeAI
 
-            llm = ChatGoogleGenerativeAI(**kwargs)
+            # Determine the model name from the kwargs
+            model_name = kwargs.get("model")
+            # Initialize ChatGoogleGenerativeAI with the determined model
+            llm = ChatGoogleGenerativeAI(model=model_name, **kwargs)
         elif provider == "fireworks":
             _check_pkg("langchain_fireworks")
+
             from langchain_fireworks import ChatFireworks
+
 
             llm = ChatFireworks(**kwargs)
         elif provider == "ollama":
@@ -136,6 +143,7 @@ class GenericLLMProvider:
             _check_pkg("langchain_mistralai")
             from langchain_mistralai import ChatMistralAI
 
+
             llm = ChatMistralAI(**kwargs)
         elif provider == "huggingface":
             _check_pkg("langchain_huggingface")
@@ -147,6 +155,7 @@ class GenericLLMProvider:
             llm = ChatHuggingFace(**kwargs)
         elif provider == "groq":
             _check_pkg("langchain_groq")
+
             from langchain_groq import ChatGroq
 
             llm = ChatGroq(**kwargs)
@@ -172,10 +181,11 @@ class GenericLLMProvider:
             _check_pkg("langchain_openai")
             from langchain_openai import ChatOpenAI
 
-            llm = ChatOpenAI(openai_api_base='https://api.deepseek.com',
-                     openai_api_key=os.environ["DEEPSEEK_API_KEY"],
-                     **kwargs
-                )
+            llm = ChatOpenAI(
+                openai_api_base='https://api.deepseek.com',
+                openai_api_key=os.environ["DEEPSEEK_API_KEY"],
+                **kwargs
+            )
         elif provider == "litellm":
             _check_pkg("langchain_community")
             from langchain_community.chat_models.litellm import ChatLiteLLM
@@ -183,28 +193,41 @@ class GenericLLMProvider:
             llm = ChatLiteLLM(**kwargs)
         elif provider == "gigachat":
             _check_pkg("langchain_gigachat")
+
             from langchain_gigachat.chat_models import GigaChat
 
-            kwargs.pop("model", None) # Use env GIGACHAT_MODEL=GigaChat-Max
+            kwargs.pop("model", None)  # Use env GIGACHAT_MODEL=GigaChat-Max
             llm = GigaChat(**kwargs)
         elif provider == "openrouter":
             _check_pkg("langchain_openai")
             from langchain_openai import ChatOpenAI
             from langchain_core.rate_limiters import InMemoryRateLimiter
 
-            rps = float(os.environ["OPENROUTER_LIMIT_RPS"]) if "OPENROUTER_LIMIT_RPS" in os.environ else 1.0
+            # Setting the API Base Url to use open router.
+            api_base_url = os.environ.get("OPENAI_BASE_URL")
+            if api_base_url == None :
+                api_base_url = 'https://openrouter.ai/api/v1'
+            
+            rps = float(os.environ.get("OPENROUTER_LIMIT_RPS", 1.0))
 
-            rate_limiter = InMemoryRateLimiter(
-                requests_per_second=rps,
-                check_every_n_seconds=0.1,
-                max_bucket_size=10,
+            rate_limiter = InMemoryRateLimiter(requests_per_second=rps, check_every_n_seconds=0.1, max_bucket_size=10)
+            
+            extra_headers = {
+                "HTTP-Referer": "https://github.com/assafelovic/gpt-researcher", # Replace with your actual site URL
+                "X-Title": "LampMind Assistant", # Replace with your actual app name
+            }
+
+            extra_body = {
+                "model": kwargs.get("model", "google/gemini-pro")
+            }
+            llm = ChatOpenAI(
+                openai_api_base='https://openrouter.ai/api/v1',
+                openai_api_key=os.environ["OPENROUTER_API_KEY"],
+                rate_limiter=rate_limiter,
+                **kwargs
             )
 
-            llm = ChatOpenAI(openai_api_base='https://openrouter.ai/api/v1',
-                     openai_api_key=os.environ["OPENROUTER_API_KEY"],
-                     rate_limiter=rate_limiter,
-                     **kwargs
-                )
+
 
         else:
             supported = ", ".join(_SUPPORTED_PROVIDERS)

@@ -25,9 +25,8 @@ from .actions import (
     get_retrievers,
     choose_agent
 )
-
-
-class GPTResearcher:
+class LampMindAssistant:
+    
     def __init__(
         self,
         query: str,
@@ -148,6 +147,13 @@ class GPTResearcher:
                 "role": self.role
             })
 
+            valid_agent_types = ["researcher", "expert"]
+            if self.agent not in valid_agent_types:
+                raise ValueError(
+                    f"Invalid agent type: {self.agent}. "
+                    f"Valid agent types are: {valid_agent_types}"
+                )
+        
         await self._log_event("research", step="conducting_research", details={
             "agent": self.agent,
             "role": self.role
